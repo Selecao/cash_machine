@@ -123,7 +123,7 @@ class ATM {
     if (requestedCash > 0 &&
         _cashList.isNotEmpty &&
         (requestedCash % lowestCash == 0) &&
-        requestedCash < balance) {
+        requestedCash <= balance) {
       int rest = requestedCash;
       List<Cash> bufferList = List.from(_cashList);
 
