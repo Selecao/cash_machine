@@ -5,7 +5,12 @@ import 'package:cashmachine/models/cash.dart';
 import 'package:cashmachine/models/atm.dart';
 
 void main() {
-  runApp(CashMachine());
+  /// This will works always for lock screen Orientation
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(CashMachine());
+  });
 }
 
 class CashMachine extends StatelessWidget {
