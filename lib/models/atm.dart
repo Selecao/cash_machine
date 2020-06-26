@@ -54,20 +54,7 @@ class ATM {
 
   Map<String, int> get getDeployedList => cashListFilter(_deployedList);
 
-  Map<String, int> get moneyLimits {
-    Map<String, int> list = {};
-
-    if (cashValues.isNotEmpty) {
-      for (Cash cashName in cashValues) {
-        String value = cashName.text;
-        int quantity =
-            cashList?.where((element) => element == cashName)?.length;
-
-        list['$value'] = quantity;
-      }
-    }
-    return list;
-  }
+  Map<String, int> get moneyLimits => cashListFilter(cashList);
 
   Map<String, int> cashListFilter(List<Cash> listToFilter) {
     Map<String, int> list = {};
@@ -102,7 +89,7 @@ class ATM {
         cashValues[0],
       ];
 
-  bool isOverLimit = false;
+  bool isCashWithdrawable = true;
 
   int get lowestCash =>
       _cashList?.map((element) => element.value)?.toList()?.reduce(min);
@@ -131,30 +118,36 @@ class ATM {
   void withdrawCash(int requestedCash) {
     print('Requested cash is: $requestedCash');
     List<Cash> withdraw = [];
+    isCashWithdrawable = false;
 
     if (requestedCash > 0 &&
         _cashList.isNotEmpty &&
         (requestedCash % lowestCash == 0) &&
         requestedCash < balance) {
       int rest = requestedCash;
-      List<Cash> buferList = List.from(_cashList);
+      List<Cash> bufferList = List.from(_cashList);
 
-      for (Cash cash in buferList) {
+      for (Cash cash in cashList) {
         if (rest < cash.value) {
           continue;
         } else {
           rest = rest - cash.value;
-          _cashList.remove(cash);
+          bufferList.remove(cash);
           withdraw.add(cash);
+
+          if (rest == 0) {
+            _cashList = bufferList;
+            _deployedList = withdraw;
+            isCashWithdrawable = true;
+            break;
+          }
         }
       }
-      isOverLimit = false;
     } else {
       print('Cannot get requested cash amount');
-      isOverLimit = true;
+      _deployedList = [];
     }
     print('Withdrawed cash:');
-    withdraw.forEach((element) => print('- ${element.text}'));
-    _deployedList = withdraw;
+    _deployedList.forEach((element) => print('- ${element.text}'));
   }
 }
