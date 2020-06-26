@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(height: 20),
             _separator(),
-            atm.isOverLimit
+            !atm.isCashWithdrawable
                 ? Container(
                     height: MediaQuery.of(context).size.width / 4,
                     padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
