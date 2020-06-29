@@ -79,155 +79,167 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset(
-              'assets/images/logo_atm.png',
-            ),
-            SizedBox(width: 3),
-            Text('ATM'),
-          ],
-        ),
-        flexibleSpace: Image.asset(
-          'assets/images/back_app_bar.png',
-          fit: BoxFit.cover,
-        ),
-        centerTitle: false,
-        elevation: 10,
+    var _pageSize = MediaQuery.of(context).size.height;
+    var _notifySize = MediaQuery.of(context).padding.top;
+    var _appBarSize = _buildAppBar().preferredSize.height;
 
-        //title: Text('Flutter Demo Home Page'),
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Flexible(
-              child: Container(
-                height: 180,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Image.asset(
-                      'assets/images/back_top.png',
-                      fit: BoxFit.fitWidth,
-                    ),
-                    Positioned(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 29),
-                          Text(
-                            'Введите сумму',
-                            style: style,
-                          ),
-                          SizedBox(height: 10),
-                          SizedBox(
-                            width: 200,
-                            child: TextField(
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp("[0-9]")),
-                              ],
-                              controller: _textController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                alignLabelWithHint: true,
-                                /*suffixIcon: Text(
-                                  '.00 руб',
-                                  textAlign: TextAlign.left,
-                                  style: style.copyWith(fontSize: 30),
-                                ),*/
-                                contentPadding: EdgeInsets.zero,
-                                counterText: '',
-                                isDense: true,
-                                suffixText: '.00 руб',
-                                suffixStyle: style.copyWith(fontSize: 30),
-                              ),
-                              cursorColor: Colors.white,
-                              style: style.copyWith(fontSize: 30),
-                              textAlign: TextAlign.end,
-                              keyboardType: TextInputType.number,
-                              autofocus: true,
-                              maxLength: 6,
-                              onChanged: (value) {
-                                print('input: $value');
-                              },
-                            ),
-                          ),
-                        ],
+    return Scaffold(
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
+        child: Container(
+          height: _pageSize - (_appBarSize + _notifySize),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Flexible(
+                child: Container(
+                  height: 180,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset(
+                        'assets/images/back_top.png',
+                        fit: BoxFit.fitWidth,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            FlatButton(
-              color: Color(0xFFe61ead),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              onPressed: () {
-                setState(() {
-                  atm.withdrawCash(int.tryParse(_textController.text) ?? 0);
-                  _textController.clear();
-                });
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 22,
-                  horizontal: 40,
-                ),
-                child: Text(
-                  'Выдать сумму',
-                  style: style.copyWith(fontSize: 16),
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            _separator(),
-            !atm.isCashWithdrawable
-                ? Container(
-                    height: MediaQuery.of(context).size.width / 4,
-                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-                    child: Center(
-                      /*padding: const EdgeInsets.symmetric(
-                        vertical: 44,
-                        horizontal: 55,
-                      ),*/
-                      child: Text(
-                        'Банкомат не может выдать, запрашиваемую сумму',
-                        textAlign: TextAlign.center,
-                        style: style.copyWith(
-                          fontSize: 18,
-                          color: Color(0xFFe61ead),
+                      Positioned(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(height: 29),
+                            Text(
+                              'Введите сумму',
+                              style: style,
+                            ),
+                            SizedBox(height: 10),
+                            SizedBox(
+                              width: 200,
+                              child: TextField(
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp("[0-9]")),
+                                ],
+                                controller: _textController,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  alignLabelWithHint: true,
+                                  /*suffixIcon: Text(
+                                    '.00 руб',
+                                    textAlign: TextAlign.left,
+                                    style: style.copyWith(fontSize: 30),
+                                  ),*/
+                                  contentPadding: EdgeInsets.zero,
+                                  counterText: '',
+                                  isDense: true,
+                                  suffixText: '.00 руб',
+                                  suffixStyle: style.copyWith(fontSize: 30),
+                                ),
+                                cursorColor: Colors.white,
+                                style: style.copyWith(fontSize: 30),
+                                textAlign: TextAlign.end,
+                                keyboardType: TextInputType.number,
+                                autofocus: true,
+                                maxLength: 6,
+                                onChanged: (value) {
+                                  print('input: $value');
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  )
-                : _buildGridView(
-                    text: 'Банкомат выдал следующие купюры',
-                    cashGridList: atm.getDeployedList),
-            _separator(),
-            _buildGridView(
-                text: 'Баланс банкомата', cashGridList: atm.moneyLimits),
-            _separator(),
-            //Spacer(),
-            Image.asset(
-              'assets/images/back_bottom.png',
-              fit: BoxFit.fitWidth,
-            ),
-          ],
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              FlatButton(
+                color: Color(0xFFe61ead),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
+                onPressed: () {
+                  setState(() {
+                    atm.withdrawCash(int.tryParse(_textController.text) ?? 0);
+                    _textController.clear();
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 22,
+                    horizontal: 40,
+                  ),
+                  child: Text(
+                    'Выдать сумму',
+                    style: style.copyWith(fontSize: 16),
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              _separator(),
+              !atm.isCashWithdrawable
+                  ? Container(
+                      height: MediaQuery.of(context).size.width / 4,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                      child: Center(
+                        /*padding: const EdgeInsets.symmetric(
+                          vertical: 44,
+                          horizontal: 55,
+                        ),*/
+                        child: Text(
+                          'Банкомат не может выдать, запрашиваемую сумму',
+                          textAlign: TextAlign.center,
+                          style: style.copyWith(
+                            fontSize: 18,
+                            color: Color(0xFFe61ead),
+                          ),
+                        ),
+                      ),
+                    )
+                  : _buildGridView(
+                      text: 'Банкомат выдал следующие купюры',
+                      cashGridList: atm.getDeployedList),
+              _separator(),
+              _buildGridView(
+                  text: 'Баланс банкомата', cashGridList: atm.moneyLimits),
+              _separator(),
+              Image.asset(
+                'assets/images/back_bottom.png',
+                width: double.maxFinite,
+                fit: BoxFit.fitWidth,
+                //alignment: FractionalOffset.bottomCenter,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Row(
+        children: [
+          Image.asset(
+            'assets/images/logo_atm.png',
+          ),
+          SizedBox(width: 3),
+          Text('ATM'),
+        ],
+      ),
+      flexibleSpace: Image.asset(
+        'assets/images/back_app_bar.png',
+        fit: BoxFit.cover,
+      ),
+      centerTitle: false,
+      elevation: 10,
+    );
+  }
+
   Widget _buildGridView({String text, Map<String, int> cashGridList}) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20, top: 20),
@@ -247,7 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisCount: 2,
                 childAspectRatio: 10.0,
                 mainAxisSpacing: 4,
-                crossAxisSpacing: 15,
+                crossAxisSpacing: 30,
               ),
               itemBuilder: (_, index) => GridTile(
                 child: Text(
